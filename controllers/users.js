@@ -19,7 +19,6 @@ router.post("/add", async (req, res) => {
             profile_picture,
             password,
             type,
-            active,
             created_on,
             modified_on
 
@@ -32,7 +31,6 @@ router.post("/add", async (req, res) => {
             profile_picture,
             password: await bcrypt.hash(req.body.password, 10),
             type,
-            active,
             created_on,
             modified_on
         })
@@ -70,7 +68,6 @@ router.post("/edit", async (req, res) => {
             profile_picture,
             password,
             type,
-            active,
             created_on,
             modified_on
 
@@ -83,7 +80,6 @@ router.post("/edit", async (req, res) => {
             profile_picture,
             password: await bcrypt.hash(req.body.password, 10),
             type,
-            active,
             modified_on
         })
         await user.save()
@@ -183,6 +179,16 @@ router.post("/profile-update", async (req, res) => {
 
     } catch (error) {
         res.status(400).json({ error: error.message })
+    }
+})
+
+router.get("/",async(req,res)=>{
+    try{
+        const users = await User.find();
+        res.status(200).json({users})
+    }catch(error){
+        res.status(400).json({error:error.message})
+
     }
 })
 module.exports = router;
