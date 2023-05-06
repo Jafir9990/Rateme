@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    phone_number: {
+    phoneNumber: {
         type: String,
         maxlength: 20,
     },
@@ -20,11 +20,11 @@ const userSchema = new mongoose.Schema({
         required: true,
 
     },
-    password_reset_code: {
+    passwordResetCode: {
         type: String,
     },
     
-    profile_picture: {
+    profilePicture: {
         type: String,
     },
    
@@ -33,16 +33,16 @@ const userSchema = new mongoose.Schema({
         required: true,
 
     },
-    department_id:{
+    departmentId:{
          type:mongoose.Schema.Types.ObjectId
 
     },
    
-    created_on: {
+    createdOn: {
         type: Date,
         default: moment().format('YYYY-MM-DD')
     },
-    modified_on: {
+    modifiedOn: {
         type: Date,
         default: moment().format('YYYY-MM-DD')
 

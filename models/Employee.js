@@ -13,19 +13,19 @@ const employeeschema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    phone_number: {
+    phoneNumber: {
         type: String,
         maxlength: 20,
     },
-    id_card: {
+    idCard: {
         type: String,
         
     },
-    department_id: {
+    departmentId: {
         type:mongoose.Schema.Types.ObjectId
 
      },
-    profile_picture:{
+    profilePicture:{
         type:String,
     },
     designation:{
@@ -35,12 +35,12 @@ const employeeschema = new mongoose.Schema({
     rating: {
         type: Number,
     }, 
-    created_on: {
+    createdOn: {
         type: Date,
         default: moment().format('YYYY-MM-DD')
     },
    
-    modified_on: {
+    modifiedOn: {
         type: Date,
         default: moment().format('YYYY-MM-DD')
 

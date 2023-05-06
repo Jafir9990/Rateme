@@ -20,7 +20,7 @@ router.post("/add", async (req, res) => {
             phone,
             logo,
             adress,
-            user_id
+            userId
              
 
         } = req.body
@@ -31,7 +31,7 @@ router.post("/add", async (req, res) => {
             phone,
             logo,
             adress,
-            user_id
+            userId
              
         })
         await department.save()
@@ -57,7 +57,7 @@ router.post("/edit", async (req, res) => {
         const department = await Department.findById(req.body.id);
         if(!department) throw new Error("Department do not exsits")
 
-        if(req.user.type !== userTypes.USER_TYPE_SUPER && req.user._id.toString() !== department.user_id.toString())
+        if(req.user.type !== userTypes.USER_TYPE_SUPER && req.user._id.toString() !== department.userId.toString())
         throw new Error("invalid request")
 
 
@@ -113,16 +113,16 @@ router.delete("/delete", async(req,res)=>{
         if(!req.body.id)throw new Error("Department id is required");
         if(!mongoose.isValidObjectId(req.body.id))
         throw new Error("deaprmrnt id is invalid");
-
+        console.log(req.user)
         if(req.user.type !== userTypes.USER_TYPE_SUPER)
         throw new Error("Invalid request")
 
         const department = await Department.findById(req.body.id)
         if(!department)throw new Error("Deparment do not exsits");
 
-        // department.user_id = '6450eebb94dba2b177eec1c3'
-        if(req.user._id.toString() !== department.user_id.toString())
-        throw new Error("invalid request")
+        // // department.userId = '6450eebb94dba2b177eec1c3'
+        // if(req.user._id.toString() !== department.userId.toString())
+        // throw new Error("invalid request")
 
         await Department.findOneAndDelete(req.body.id)
         res.json({success:true})
