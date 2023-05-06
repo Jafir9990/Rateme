@@ -24,23 +24,19 @@ const departmentSchema = new mongoose.Schema({
         
 
     },
-    
-    
     rating: {
         type: Number,
     },
-    user_id:{
+    userId:{
         type:mongoose.Schema.Types.ObjectId
 
    },
- 
-    
-    created_on: {
+    createdOn: {
         type: Date,
         default: moment().format('YYYY-MM-DD')
     },
    
-    modified_on: {
+    modifiedOn: {
         type: Date,
         default: moment().format('YYYY-MM-DD')
 
@@ -51,8 +47,8 @@ const departmentSchema = new mongoose.Schema({
 departmentSchema.set('toJSON', {
     getters: true,
     transform: (doc, column, options) => {
-        column.created_on = moment(column.created_on).format('YYYY-MM-DD')
-        column.modified_on = moment(column.modified_on).format('YYYY-MM-DD')
+        column.createdOn = moment(column.createdOn).format('YYYY-MM-DD')
+        column.modifiedOn = moment(column.modifiedOn).format('YYYY-MM-DD')
         return column
     }
 })
