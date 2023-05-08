@@ -32,7 +32,6 @@ const alertReducer = (state = initState, action) => {
         case alertActionTypes.CLEAR_ALERT:
             return initState;
         default:
-            console.log(state)
             return state;
     }
 }

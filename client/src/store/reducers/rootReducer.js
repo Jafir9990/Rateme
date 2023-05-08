@@ -1,9 +1,11 @@
 import alertReducer from "./alertReducer";
+import progressBarReducer from "./progressBarReducer";
 
 const { combineReducers } = require("redux")
 
 const allReducers = {
-    alert: alertReducer
+    alert: alertReducer,
+    progressBar:progressBarReducer
     
 }
 
