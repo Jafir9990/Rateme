@@ -17,7 +17,7 @@ function Alert({alert, clearAlert}){
         if(!variant) return null;
 
     return(
-        <Snackbar open={true} autoHideDuration={5000} onClose={clearAlert}>
+        <Snackbar anchorOrigin={{vertical:'top', horizontal:'center'}} open={true} autoHideDuration={5000} onClose={clearAlert}>
             <MuiAlert severity={variant}>{alert[variant]}</MuiAlert>
         </Snackbar>
     )
