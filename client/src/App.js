@@ -10,14 +10,26 @@ import AppPublic from './AppPublic';
 import { useEffect } from 'react';
 import { loadAuth, signout } from './store/actions/authActions';
 import AppPreLoader from './components/library/AppPreLoader';
+import { Navigate, useLocation,  } from 'react-router-dom';
+
+
+const publicRoutes = ['/', '/admin/signin', '/admin/forgot-password', '/admin/reset-password/:resetCode']
 
 function App({ user, isAuthLoaded, loadAuth, signout }) {
+  const location = useLocation();
   useEffect(() => {
     loadAuth()
   }, [])
   if (!isAuthLoaded) {
     return <AppPreLoader message="loading App....." />
   }
+
+if(user && publicRoutes.includes(location.pathname))
+  return <Navigate to="/admin/dashboard"/>
+if(!user && !publicRoutes.includes(location.pathname))
+  return <Navigate to="/admin/signin"/>
+
+
   if (!user)
     return <AppPublic />
   return (

@@ -5,6 +5,9 @@ const bcrypt = require('bcrypt');
 const { createJWTToken } = require('../utils/util');
 const {verifyUser} = require('../middlewares/auth');
 const { default: mongoose } = require('mongoose');
+const { randomBytes } = require('crypto');
+const { default: axios } = require('axios');
+
 
 router.use(['/add','/edit','/delete','/profile','/profile-update'], verifyUser);
 
@@ -139,6 +142,49 @@ router.get("/profile",async(req,res) =>{
     }
 })
 
+
+router.post("/forgot-password", async (req, res) => {
+    try {
+        if (!req.body.email) throw new Error('Email is required');
+        let user = await User.findOne({ email: req.body.email });
+        if (!user) throw new Error('invalid request');
+
+        const code = user._id.toString() + randomBytes(Math.ceil(25/2)).toString('hex').slice(0,25);
+        await User.findByIdAndUpdate(user._id,{passwordResetCode : code})
+
+        const data = {
+            Recipients: {
+              To: [user.email]
+            },
+            Content: {
+              Body: [{
+                ContentType: 'HTML',
+                Content: 'testing email service',
+                Charset: "utf8"
+              }],
+              from: process.env.EMAIL_FROM
+            }
+          }
+
+          const response = await axios.post('https://api.elasticemail.com/v4/emails/transactional', data, {
+            headers: {
+                'X-ElasticEmail-ApiKey': process.env.EMAIL_API_KEY
+             }
+            })
+            console.log(response)
+          
+
+        user = user.toObject()
+        delete user.password
+
+        res.json({ user })
+
+    } catch (error) {
+    
+
+        res.status(400).json({ error: error.message })
+    }
+})
 
 
 router.post("/profile-update", async (req, res) => {
