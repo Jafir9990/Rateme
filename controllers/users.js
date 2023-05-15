@@ -7,6 +7,7 @@ const {verifyUser} = require('../middlewares/auth');
 const { default: mongoose } = require('mongoose');
 const { randomBytes } = require('crypto');
 const { default: axios } = require('axios');
+const  ejs = require('ejs');
 
 
 router.use(['/add','/edit','/delete','/profile','/profile-update'], verifyUser);
@@ -151,6 +152,8 @@ router.post("/forgot-password", async (req, res) => {
 
         const code = user._id.toString() + randomBytes(Math.ceil(25/2)).toString('hex').slice(0,25);
         await User.findByIdAndUpdate(user._id,{passwordResetCode : code})
+        const resetPasswordURL = process.env.BASE_URL + 'admin/reset-password/' + code;
+        console.log(resetPasswordURL)
 
         const data = {
             Recipients: {
@@ -159,9 +162,10 @@ router.post("/forgot-password", async (req, res) => {
             Content: {
               Body: [{
                 ContentType: 'HTML',
-                Content: 'testing email service',
+                Content: await ejs.renderFile('./emails/resetPassword.ejs', {name: user.name, resetPasswordURL}),
                 Charset: "utf8"
               }],
+              Subject: "Reset Password",
               from: process.env.EMAIL_FROM
             }
           }
@@ -171,13 +175,7 @@ router.post("/forgot-password", async (req, res) => {
                 'X-ElasticEmail-ApiKey': process.env.EMAIL_API_KEY
              }
             })
-            console.log(response)
-          
-
-        user = user.toObject()
-        delete user.password
-
-        res.json({ user })
+            res.json({success: true})
 
     } catch (error) {
     
@@ -185,6 +183,49 @@ router.post("/forgot-password", async (req, res) => {
         res.status(400).json({ error: error.message })
     }
 })
+
+
+router.post("/verify-reset-code", async (req, res) => {
+    try {
+        if (!req.body.code) throw new Error('code is required');
+        let user = await User.findOne({ passwordResetCode: req.body.code });
+        if (!user) throw new Error('invalid request');
+
+          res.json({success: true})
+
+    } catch (error) {
+         res.status(400).json({ error: error.message })
+    }
+})
+
+
+router.post("/reset-password", async (req, res) => {
+
+    try {
+      if (!req.body.code) throw new Error("Code is required");
+      if (!req.body.newPassword) throw new Error("New password is required");
+      if (!req.body.confirmPassword) throw new Error("please confirm password");
+  
+      if(req.body.newPassword.length < 6)  
+        throw new Error("Password should have at least 6 characters");
+  
+      if(req.body.newPassword !== req.body.confirmPassword)
+        throw new Error("Passwords are not same");
+  
+      let user = await User.findOne({ passwordResetCode: req.body.code });
+      if (!user) throw new Error("Invalid request");
+  
+      await User.findByIdAndUpdate(user._id, {
+        password: await bcrypt.hash(req.body.newPassword, 10),
+        passwordResetCode: ''
+      })
+      
+      res.json({ success: true });
+  
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
 
 
 router.post("/profile-update", async (req, res) => {
