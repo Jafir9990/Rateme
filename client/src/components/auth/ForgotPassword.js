@@ -2,20 +2,27 @@ import { Box, Button, CircularProgress } from '@mui/material'
 import React from 'react'
 import { Field, Form } from 'react-final-form'
 import TextInput from '../library/form/TextInput';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
-import { showError } from '../../store/actions/alertActions';
+import { showError, showSuccess } from '../../store/actions/alertActions';
 
 //forgot password form ......
 export default function ForgotPassword() {
   const dispatch = useDispatch();
+  const navigator = useNavigate()
+
   return (
     <Box borderRadius="5px" boxShadow="0px 0px 17px 5px #dbdada" p={3} bgcolor='#fff' textAlign="center" minWidth="350px">
       <h3>Rate Me</h3>
       <Form
       onSubmit={(data) =>{
         return axios.post('/users/forgot-password', data).then(({data}) => {
+          if(data.success)
+          {
+            navigator('/admin/signin')
+            dispatch(showSuccess("an email has been sent successfully to your inbox. please check your inbox"))
+          }
 
 
         }).catch(err => {
