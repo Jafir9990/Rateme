@@ -1,7 +1,7 @@
 import { progressBarActionTypes } from "../actions/progressBarAction"
 
 const initState = {
-    loading:true
+    loading:false
 }
 
 const progressBarReducer = (state = initState, action) => {

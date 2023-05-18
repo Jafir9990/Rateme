@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { signout } from '../store/actions/authActions';
 import ProgressBar from './library/ProgressBar';
+import StarPurple500Icon from '@mui/icons-material/StarPurple500';
 
  function AppBar() {
     const dispatch = useDispatch()
@@ -23,7 +24,9 @@ import ProgressBar from './library/ProgressBar';
     <MuiAppBar>
       <Container maxWidth='xl'>
         <Toolbar>
-        <AdbIcon sx={{display:'flex', mr:1 }} />
+        <StarPurple500Icon sx={{display:'flex', mr:1  }} fontSize='small' />
+        <StarPurple500Icon sx={{display:'flex', mr:1  }} fontSize='medium' />
+        <StarPurple500Icon sx={{display:'flex', mr:1  }} fontSize='large' />
         <Typography
             variant='h6'
             component={Link}
