@@ -2,7 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import Alert from './components/library/Alert';
 import { connect, useDispatch } from 'react-redux';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Container } from '@mui/material';
 import { showSuccess } from './store/actions/alertActions';
 import { hideProgressBar, showProgressBar } from './store/actions/progressBarAction';
 import ProgressBar from './components/library/ProgressBar';
@@ -10,10 +10,11 @@ import AppPublic from './AppPublic';
 import { useEffect } from 'react';
 import { loadAuth, signout } from './store/actions/authActions';
 import AppPreLoader from './components/library/AppPreLoader';
-import { Navigate, useLocation,  } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation,  } from 'react-router-dom';
 import AppBar from './components/AppBar';
-
-
+import AccountSettings from './components/AccountSettings';
+import Dashboard from './components/Dashbord'
+ 
 const publicRoutes = ['/admin/signin', '/admin/forgot-password', '/admin/reset-password/']
 
 function App({ user, isAuthLoaded, loadAuth, signout }) {
@@ -39,8 +40,14 @@ if(location.pathname === '/' || location.pathname === '/admin')
   return (
     <Box height="100%" className="App">
       <AppBar />
-      you are SIGNED In
-      <Button onClick={signout}>Logout</Button>
+      <Alert />
+      <Container sx={{mt:10}} maxWidth='lg'>
+        <Routes>
+          <Route path='/admin/account-settings' Component={AccountSettings}/>
+          <Route path='/admin/dashboard' Component={Dashboard}/>
+        </Routes>
+      </Container>
+   
     </Box>
 
   );
