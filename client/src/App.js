@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 import { loadAuth, signout } from './store/actions/authActions';
 import AppPreLoader from './components/library/AppPreLoader';
 import { Navigate, useLocation,  } from 'react-router-dom';
+import AppBar from './components/AppBar';
 
 
 const publicRoutes = ['/admin/signin', '/admin/forgot-password', '/admin/reset-password/']
@@ -37,6 +38,7 @@ if(location.pathname === '/' || location.pathname === '/admin')
     return <AppPublic />
   return (
     <Box height="100%" className="App">
+      <AppBar />
       you are SIGNED In
       <Button onClick={signout}>Logout</Button>
     </Box>

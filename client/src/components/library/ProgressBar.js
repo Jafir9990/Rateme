@@ -6,7 +6,7 @@ function ProgressBar() {
     return(
         <div>
             {
-             loading && <LinearProgress />
+             loading && <LinearProgress color="info"/>
             }
         </div>
     )
