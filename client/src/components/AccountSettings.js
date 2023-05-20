@@ -9,16 +9,17 @@ import { showError, showSuccess } from '../store/actions/alertActions';
 import { signin } from '../store/actions/authActions';
 import TextInput from './library/form/TextInput';
 import { hideProgressBar, showProgressBar } from '../store/actions/progressBarAction';
+import FileInput from './library/form/FileInput';
 
 function AccountSettings({user,loading}) {
   const dispatch = useDispatch()
   return (
-    <Box borderRadius="5px" boxShadow="0px 0px 17px 5px #dbdada" p={3} bgcolor='#fff' textAlign="center" minWidth="350px">
-      <h3>Rate Me</h3>
+    <Box textAlign="center" sx={{width:{sm:"100%",md:"50%"}, mx:"auto"}} >
+      <h3>Account Settings</h3>
       <Form
       onSubmit={(data) =>{
         dispatch( showProgressBar())
-        return axios.post('/users/profile-update', data).then(({data}) => {
+        return axios.postForm('/users/profile-update', data).then(({data}) => {
           if(data.user)
           {
             dispatch(showSuccess('Acount Settings Update Successfuly'))
@@ -66,6 +67,7 @@ function AccountSettings({user,loading}) {
                 <Field name='name' type='text' component={TextInput} placeholder='Enter Name...' />
                 <Field name='email' type='email' component={TextInput} placeholder='Enter Email Adress...'/>
                 <Field name='phoneNumber' type='text' component={TextInput} placeholder='Enter Email Adress...'/>
+                <Field name='profilePicture'  component={FileInput} inputProps={{accept:"image/*"}}/>
                 <Field name='currentPassword' type='password' component={TextInput} placeholder='Enter Current Password...' />
                 <Field name='newPassword' type='password' component={TextInput} placeholder='Enter New Password...' />
                 <Field name='confirmPassword' type='password' component={TextInput} placeholder='Confirm New Password...' />
