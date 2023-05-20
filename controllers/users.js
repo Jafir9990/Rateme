@@ -8,6 +8,10 @@ const { default: mongoose } = require('mongoose');
 const { randomBytes } = require('crypto');
 const { default: axios } = require('axios');
 const  ejs = require('ejs');
+const  multer = require('multer');
+const fs = require('fs').promises;
+
+
 
 
 router.use(['/add','/edit','/delete','/profile','/profile-update'], verifyUser);
@@ -227,8 +231,24 @@ router.post("/reset-password", async (req, res) => {
     }
   });
 
+  const storage = multer.diskStorage({
+    destination: async (req, file, cb) => {
+        try{
+        await fs.mkdir(`content/${req.user._id}/`,{recursive: true})
+        cb(null, `content/${req.user._id}/`)
+        }catch(err)
+        {
+            cb(err, null)
+        }
+    },
+    filename: (req,file,cb) => {
+        cb(null, file.originalname)
+    }
+  })
 
-router.post("/profile-update", async (req, res) => {
+  const upload = multer({storage})
+
+router.post("/profile-update", upload.single('profilePicture'), async (req, res) => {
     try {
         if(!req.body.name) throw new Error('Name is Required')
 
@@ -237,6 +257,8 @@ router.post("/profile-update", async (req, res) => {
             phoneNumber:req.body.phoneNumber,
             modifiedOn: new Date()
         }
+        if(req.file && req.file.filename)
+        record.profilePicture = req.file.filename;
         if(req.body.newPassword)
         {
             if(!req.body.currentPassword) throw new Error('Current password Is Requried')
