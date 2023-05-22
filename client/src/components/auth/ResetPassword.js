@@ -12,7 +12,7 @@ function ResetPassword() {
   const navigator = useNavigate();
   const dispatch = useDispatch();
   useEffect(() =>{
-    axios.post('/users/verify-reset-code', { code: resetCode }).then(result => {
+    axios.post('api/users/verify-reset-code', { code: resetCode }).then(result => {
 
     }).catch(err => {
       dispatch(showError('invalid Request'))
