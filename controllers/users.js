@@ -10,6 +10,7 @@ const { default: axios } = require('axios');
 const  ejs = require('ejs');
 const  multer = require('multer');
 const fs = require('fs').promises;
+const path = require('path')
 
 
 
@@ -246,7 +247,20 @@ router.post("/reset-password", async (req, res) => {
     }
   })
 
-  const upload = multer({storage})
+  const upload = multer({
+    storage,
+    fileFilter:(req,file,cb) => {
+        const allowedTypes =['jpg', 'png', 'gif', 'bmp', 'jpeg'];
+        const ext = path.extname(file.originalname).replace('.','');
+        if(allowedTypes.includes(ext))
+          cb(null, true)
+        else
+        {
+          cb(new Error("File type is not allowed"),false)
+        }
+
+    }
+})
 
 router.post("/profile-update", upload.single('profilePicture'), async (req, res) => {
     try {
@@ -258,7 +272,14 @@ router.post("/profile-update", upload.single('profilePicture'), async (req, res)
             modifiedOn: new Date()
         }
         if(req.file && req.file.filename)
+        {
         record.profilePicture = req.file.filename;
+        if(req.user.profilePicture && req.user.profilePicture !== req.file.filename)
+        {
+            const oldPicPath = `content/${req.user._id}/${req.user.profilePicture}`
+            await fs.unlink(oldPicPath)
+        }
+        }
         if(req.body.newPassword)
         {
             if(!req.body.currentPassword) throw new Error('Current password Is Requried')

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { connect, useDispatch } from 'react-redux';
 import { showError, showSuccess } from '../store/actions/alertActions';
-import { signin } from '../store/actions/authActions';
+import { signin, updateUser } from '../store/actions/authActions';
 import TextInput from './library/form/TextInput';
 import { hideProgressBar, showProgressBar } from '../store/actions/progressBarAction';
 import FileInput from './library/form/FileInput';
@@ -19,9 +19,10 @@ function AccountSettings({user,loading}) {
       <Form
       onSubmit={(data) =>{
         dispatch( showProgressBar())
-        return axios.postForm('/users/profile-update', data).then(({data}) => {
+        return axios.postForm('api/users/profile-update', data).then(({data}) => {
           if(data.user)
           {
+            dispatch(updateUser(data.user))
             dispatch(showSuccess('Acount Settings Update Successfuly'))
           }
           dispatch(hideProgressBar())

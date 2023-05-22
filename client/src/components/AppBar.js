@@ -2,13 +2,14 @@ import { Avatar, Box, Button, Container, IconButton, Menu, MenuItem, AppBar as M
 import AdbIcon from '@mui/icons-material/Adb';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { signout } from '../store/actions/authActions';
 import ProgressBar from './library/ProgressBar';
 import StarPurple500Icon from '@mui/icons-material/StarPurple500';
 
  function AppBar() {
     const dispatch = useDispatch()
+    const user = useSelector((state) => state.auth.user)
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = (event) => {
         setAnchorEl(event.currentTarget)
@@ -55,7 +56,7 @@ import StarPurple500Icon from '@mui/icons-material/StarPurple500';
               <Box>
                 <Tooltip title='open settings'>
                     <IconButton onClick={openMenu}>
-                        <Avatar alt='Profile picture' src='' />
+                        <Avatar alt='Profile picture' src={process.env.REACT_APP_BASE_URL + `content/${user._id}/${user.profilePicture}`} />
                     </IconButton>
                 </Tooltip>
               <Menu

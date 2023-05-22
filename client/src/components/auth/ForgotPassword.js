@@ -17,7 +17,7 @@ export default function ForgotPassword() {
       <h3>Rate Me</h3>
       <Form
       onSubmit={(data) =>{
-        return axios.post('/users/forgot-password', data).then(({data}) => {
+        return axios.post('api/users/forgot-password', data).then(({data}) => {
           if(data.success)
           {
             navigator('/admin/signin')
