@@ -15,6 +15,9 @@ import AppBar from './components/AppBar';
 import AccountSettings from './components/AccountSettings';
 import Dashboard from './components/Dashbord'
 import BloackInterface from './components/library/BloackInterface';
+import AddDepartment from './components/departments/AddDepartment';
+import EditDepartment from './components/departments/EditDepartment';
+import Departments from './components/departments/Departments';
  
 const publicRoutes = ['/admin/signin', '/admin/forgot-password', '/admin/reset-password/']
 
@@ -47,6 +50,11 @@ if(location.pathname === '/' || location.pathname === '/admin')
         <Routes>
           <Route path='/admin/account-settings' Component={AccountSettings}/>
           <Route path='/admin/dashboard' Component={Dashboard}/>
+
+          {/* Departments routes */}
+          <Route path="/admin/departments" Component={Departments} />
+          <Route path="/admin/departments/add" Component={AddDepartment} />
+          <Route path="/admin/departments/edit/:deptId" Component={EditDepartment} />
         </Routes>
       </Container>
    
