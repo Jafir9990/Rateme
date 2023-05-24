@@ -1,148 +1,151 @@
-const express = require('express');
+const express = require("express");
+const mongoose = require("mongoose");
 const router = express.Router();
-const Department = require("../models/Department")
-const User = require("../models/User")
-const {verifyUser} = require('../middlewares/auth');
-const {  mongoose } = require('mongoose');
-const { userTypes } = require('../utils/util');
+const Department = require("../models/Department");
+const User = require("../models/User");
+const { verifyUser } = require('../middlewares/auth');
+const { userTypes } = require("../utils/util");
+
+const multer = require('multer');
+const fs = require('fs').promises;
+const path = require('path');
+
+const storage = multer.diskStorage({
+  destination: async (req, file, cb) => {
+    try {
+      await fs.mkdir(`content/departments/`, { recursive: true });
+      cb(null, `content/departments/`);
+    } catch (err) {
+      cb(err, null);
+    }
+
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  }
+})
+
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['jpg', 'png', 'gif', 'bmp', 'jpeg'];
+    const ext = path.extname(file.originalname).replace('.', '');
+    if (allowedTypes.includes(ext))
+      cb(null, true);
+    else {
+      cb(new Error("File type is not allowed"), false);
+    }
+  }
+})
+
+
 
 router.use(verifyUser);
 
-router.post("/add", async (req, res) => {
- 
-    try {
-        
-       if(req.user.type !== userTypes.USER_TYPE_SUPER)
-       throw new Error("Invalid request")
-        const {
-            name,
-            email,
-            phone,
-            logo,
-            adress,
-            userId
-             
 
-        } = req.body
+router.post("/add", upload.single("logo"), async (req, res) => {
+  try {
 
-        const department = new Department({
-            name,
-            email,
-            phone,
-            logo,
-            adress,
-            userId
-             
-        })
-        await department.save()
-        res.json({ department })
+    //only super admin can add department
+    if (req.user.type !== userTypes.USER_TYPE_SUPER)
+      throw new Error("Invalid Request");
 
-
-    } catch (error) {
-        res.status(400).json({ error: error.message })
+    const record = {
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+      address: req.body.address,
     }
-})
+    if (req.file && req.file.filename) {
+      record.logo = req.file.filename;
+    }
 
+    const department = new Department(record)
 
+    await department.save();
+    res.json({ department });
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
 router.post("/edit", async (req, res) => {
-   
-    try {
+  try {
+    if (!req.body.id) throw new Error("Department id is required");
+    if (!mongoose.isValidObjectId(req.body.id))
+      throw new Error("Dpartment id is invalid");
 
-        if(!req.body.id) throw new Error("Department id is required")
-        if(!mongoose.isValidObjectId(req.body.id))
-        throw new Error("Department id is invalid")
-        
+    const department = await Department.findById(req.body.id);
+    if (!department) throw new Error("Department does not exists");
 
-        const department = await Department.findById(req.body.id);
-        if(!department) throw new Error("Department do not exsits")
+    //check if logged in user is not super admin and that user 
+    //has access to its own department
+    if (req.user.type !== userTypes.USER_TYPE_SUPER && req.user._id.toString() !== department.userId.toString()) // to string is used to convert req.user._id to string because this returns new ObjectId("6439f4ca31d7babed61963e0") that is object user id and we need only string to compare it.
+      throw new Error("Invalid request");
 
-        if(req.user.type !== userTypes.USER_TYPE_SUPER && req.user._id.toString() !== department.userId.toString())
-        throw new Error("invalid request")
-
-
-        const {
-            name,
-            email,
-            phone,
-            logo,
-            adress,
-             
-
-        } = req.body
-
-     let updatedDepartment = await Department.findByIdAndUpdate(req.body.id,{
-        name,
-        email,
-        phone,
-        logo,
-        adress,
-         
-        })
-        res.json({ department: updatedDepartment  })
+    const {
+      name,
+      email,
+      phone,
+      logo,
+      address
+    } = req.body;
 
 
-    } catch (error) {
-        res.status(400).json({ error: error.message })
-    }
-})
+    let updatedDepartment = await Department.findByIdAndUpdate(req.body.id, {
+      name,
+      email,
+      phone,
+      logo,
+      address
+    })
 
-// router.post("/signin", async (req, res) => {
-//     try {
-//         if (!req.body.email) throw new Error('Email is required');
-//         if (!req.body.password) throw new Error('password is required');
-//         let user = await User.findOne({ email: req.body.email });
-//         if (!user) throw new Error('Email or password is incorrect');
-//         if (!(await bcrypt.compare(req.body.password, user.password)))
-//             throw new Error('Email or Password is incorrect')
+    res.json({ department: updatedDepartment });
 
-//         user = user.toObject()
-//         delete user.password
-
-//         const token = await createJWTToken(user,12)
-
-//         res.json({ user, token })
-
-//     } catch (error) {
-//         res.status(400).json({ error: error.message })
-//     }
-// })
-
-router.delete("/delete", async(req,res)=>{
-    try{
-        if(!req.body.id)throw new Error("Department id is required");
-        if(!mongoose.isValidObjectId(req.body.id))
-        throw new Error("deaprmrnt id is invalid");
-        console.log(req.user)
-        if(req.user.type !== userTypes.USER_TYPE_SUPER)
-        throw new Error("Invalid request")
-
-        const department = await Department.findById(req.body.id)
-        if(!department)throw new Error("Deparment do not exsits");
-
-        // // department.userId = '6450eebb94dba2b177eec1c3'
-        // if(req.user._id.toString() !== department.userId.toString())
-        // throw new Error("invalid request")
-
-        await Department.findOneAndDelete(req.body.id)
-        res.json({success:true})
-    }catch(error){
-        res.status(400).json({error:error.message})
-    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
 
 
-router.get("/",async(req,res)=>{
-    try{
-        if(req.user.type !== userTypes.USER_TYPE_SUPER)
-        throw new Error("Invalid request")
-        
-        const deaprmrnts = await Department.find();
-        res.status(200).json({deaprmrnts})
-    }catch(error){
-        res.status(400).json({error:error.message})
+router.delete("/delete", async (req, res) => {
+  try {
+    if (!req.body.id) throw new Error("Department id is required");
+    if (!mongoose.isValidObjectId(req.body.id))
+      throw new Error("Department id is invalid");
 
-    }
-})
+    //only super admin can delete department
+    if (req.user.type !== userTypes.USER_TYPE_SUPER)
+      throw new Error("Invalid Request");
+
+    const department = await Department.findById(req.body.id);
+    if (!department) throw new Error("Department does not exists");
+
+    await Department.findByIdAndDelete(req.body.id);
+
+    res.json({ success: true });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+
+
+router.get("/", async (req, res) => {
+  try {
+
+    //only super admin can see list of departments
+    if (req.user.type !== userTypes.USER_TYPE_SUPER)
+      throw new Error("Invalid Request");
+
+    const departments = await Department.find();
+
+    res.status(200).json({ departments });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 
 module.exports = router;

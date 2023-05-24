@@ -52,6 +52,22 @@ import StarPurple500Icon from '@mui/icons-material/StarPurple500';
             >
             DEPARTMENTS
             </Button>
+
+            <Button
+            component={Link}
+            to="/admin/departments/add"
+            sx={{color:'#fff', my:2 }}
+            >
+            ADD DEPARTMENT
+            </Button>
+            
+            {/* <Button
+            component={Link}
+            to="/admin/departments/edit/:deptId"
+            sx={{color:'#fff', my:2 }}
+            >
+            Edit DEPARTMENT
+            </Button> */}
         </Box>
               <Box>
                 <Tooltip title='open settings'>

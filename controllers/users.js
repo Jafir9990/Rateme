@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require("../models/User")
 const bcrypt = require('bcrypt');
-const { createJWTToken } = require('../utils/util');
+const { createJWTToken, userTypes } = require('../utils/util');
 const {verifyUser} = require('../middlewares/auth');
 const { default: mongoose } = require('mongoose');
 const { randomBytes } = require('crypto');
@@ -15,7 +15,7 @@ const path = require('path')
 
 
 
-router.use(['/add','/edit','/delete','/profile','/profile-update'], verifyUser);
+router.use(['/','/add','/edit','/delete','/profile','/profile-update'], verifyUser);
 
 router.post("/add", async (req, res) => {
     const userExist = await User.findOne({email:req.body.email})
