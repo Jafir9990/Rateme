@@ -18,6 +18,9 @@ import BloackInterface from './components/library/BloackInterface';
 import AddDepartment from './components/departments/AddDepartment';
 import EditDepartment from './components/departments/EditDepartment';
 import Departments from './components/departments/Departments';
+import AddUser from './components/users/AddUser';
+import Users from './components/users/Users';
+import EditUser from './components/users/EditUser';
  
 const publicRoutes = ['/admin/signin', '/admin/forgot-password', '/admin/reset-password/']
 
@@ -55,6 +58,11 @@ if(location.pathname === '/' || location.pathname === '/admin')
           <Route path="/admin/departments" Component={Departments} />
           <Route path="/admin/departments/add" Component={AddDepartment} />
           <Route path="/admin/departments/edit/:deptId" Component={EditDepartment} />
+
+          {/* users routes */}
+          <Route path="/admin/users" Component={Users} />
+          <Route path="/admin/users/add" Component={AddUser} />
+          <Route path="/admin/users/edit/:userId" Component={EditUser} />
         </Routes>
       </Container>
    
