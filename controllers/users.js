@@ -18,87 +18,78 @@ const path = require('path')
 router.use(['/','/add','/edit','/delete','/profile','/profile-update'], verifyUser);
 
 router.post("/add", async (req, res) => {
-    const userExist = await User.findOne({email:req.body.email})
     try {
-        if(userExist) throw new Error("email already exsit")
-        const {
-            name,
-            email,
-            phoneNumber,
-            profilePicture,
-            password,
-            type,
-            createdOn,
-            modifiedOn
-
-        } = req.body
-
-        const user = new User({
-            name: name,
-            email,
-            phoneNumber,
-            profilePicture,
-            password: await bcrypt.hash(req.body.password, 10),
-            type,
-            createdOn,
-            modifiedOn
-        })
-        await user.save()
-        res.json({ user })
-
-
+      //only super admin can add user
+      if (req.user.type !== userTypes.USER_TYPE_SUPER)
+        throw new Error("Invalid Request");
+  
+      const userExist = await User.findOne({ email: req.body.email });
+      if (userExist) throw new Error("This email is already registered");
+  
+      const record = {
+        name: req.body.name,
+        email: req.body.email,
+        phoneNumber: req.body.phoneNumber,
+        password: await bcrypt.hash(req.body.password, 10),
+        type: req.body.type,
+        departmentId: req.body.departmentId,
+        createdOn: new Date()
+        
+      }
+  
+      const user = new User(record)
+  
+      await user.save();
+      res.json({ user });
+  
     } catch (error) {
-        res.status(400).json({ error: error.message })
+      res.status(400).json({ error: error.message });
     }
-})
+  });
 
 
-
-router.post("/edit", async (req, res) => {
-   
-    const userExist = await User.findOne({email:req.body.email,_id:{$ne:req.body.id}})
+  router.post("/edit", async (req, res) => {
     try {
-        if(userExist) throw new Error("email already exsit")
-
-        if(!req.body.id) throw new Error("user id is required")
-        if(!mongoose.isValidObjectId(req.body.id))
-        throw new Error("user id is invalid")
-        if(req.user._id.toString() !== req.body.id)
-        throw new Error("invalid request")
-
-        const user = await User.findById(req.body.id);
-        if(!user) throw new Error("user do not exsits")
-
-
-        const {
-            name,
-            email,
-            phoneNumber,
-            profilePicture,
-            password,
-            type,
-            createdOn,
-            modifiedOn
-
-        } = req.body
-
-     let updatedUser = await User.findByIdAndUpdate(req.body.id,{
-            name: name,
-            email,
-            phoneNumber,
-            profilePicture,
-            password: await bcrypt.hash(req.body.password, 10),
-            type,
-            modifiedOn
-        })
-        await user.save()
-        res.json({ user: updatedUser  })
-
-
+  
+      //only super admin can edit user
+      if (req.user.type !== userTypes.USER_TYPE_SUPER)
+      throw new Error("Invalid Request");
+  
+      const userExist = await User.findOne({ email: req.body.email, _id: { $ne: req.body.id } });
+      if (userExist) throw new Error("This email is already registered");
+  
+      if (!req.body.id) throw new Error("User id is required");
+      if (!mongoose.isValidObjectId(req.body.id))
+        throw new Error("User id is invalid");
+  
+      const user = await User.findById(req.body.id);
+      if (!user) throw new Error("User does not exists");
+  
+  
+      const record = {
+        name: req.body.name,
+        email: req.body.email,
+        phoneNumber: req.body.phoneNumber,
+        type: req.body.type,
+        departmentId: req.body.departmentId,
+        modifiedOn: new Date()
+      }
+  
+      if(req.body.password)
+        record.password = await bcrypt.hash(req.body.password, 10);
+  
+      await User.findByIdAndUpdate(req.body.id, record)
+  
+      let updatedUser = await User.findById(req.body.id);
+      delete updatedUser.password;
+  
+      res.json({ user: updatedUser });
+  
     } catch (error) {
-        res.status(400).json({ error: error.message })
+      res.status(400).json({ error: error.message });
     }
-})
+  });
+
 
 router.post("/signin", async (req, res) => {
     try {
