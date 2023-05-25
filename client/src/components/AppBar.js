@@ -53,13 +53,13 @@ import StarPurple500Icon from '@mui/icons-material/StarPurple500';
             DEPARTMENTS
             </Button>
 
-            <Button
+            {/* <Button
             component={Link}
             to="/admin/departments/add"
             sx={{color:'#fff', my:2 }}
             >
             ADD DEPARTMENT
-            </Button>
+            </Button> */}
             
             {/* <Button
             component={Link}

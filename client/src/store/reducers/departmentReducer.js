@@ -13,6 +13,13 @@ function departmentReducer(state = initialState, action) {
         records: newDepartmentsArray
       }
     case departmentActions.UPDATE_DEPT:
+      return{
+        ...state,
+        records: state.records.map(item =>{
+          if(item._id !== action.department._id) return item;
+          return action.department
+        })
+      }
     case departmentActions.REMOVE_DEPT:
     case departmentActions.DEPTS_LOADED:
       return {
