@@ -1,21 +1,28 @@
 import { Form, Field } from "react-final-form";
 import { Button, Box } from "@mui/material";
 import axios from "axios";
-import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import TextInput from "../library/form/TextInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserEdit } from "@fortawesome/free-solid-svg-icons";
 import { hideProgressBar, showProgressBar } from "../../store/actions/progressBarAction";
 import FileInput from "../library/form/FileInput";
 import { showError, showSuccess } from "../../store/actions/alertActions";
-import { addDepartment } from "../../store/actions/departmentActions";
-import { useParams } from "react-router-dom";
+import { addDepartment, updateDepartment } from "../../store/actions/departmentActions";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 
 function EditDepartment() {
 
   const dispatch = useDispatch();
   const {deptId} = useParams()
+  const navigator = useNavigate()
+  
+  const department = useSelector(state => state.departments.records.find(item => item._id === deptId))
+  if(!department)
+  {
+    return <Navigate to="/admin/departments" />
+  }
   
   const validate = (data) => {
     const errors = {};
@@ -32,10 +39,11 @@ function EditDepartment() {
   const handelDepartment = async (data, form) => {
     try {
       dispatch(showProgressBar())
-      let result = await axios.postForm("api/departments/add", data);
+      let result = await axios.postForm("api/departments/edit", {...data, id: deptId});
       if (result.data.department) {
-        dispatch(addDepartment(result.data.department));
-        dispatch(showSuccess('Department added successfully'))
+        dispatch(updateDepartment(result.data.department));
+        dispatch(showSuccess('Department updated successfully'))
+        navigator('/admin/departments')
       }
       dispatch(hideProgressBar())
 
@@ -53,7 +61,12 @@ function EditDepartment() {
       <Form
         onSubmit={handelDepartment}
         validate={validate}
-        initialValues={{}}
+        initialValues={{
+          name: department.name,
+          email: department.email,
+          phone: department.phone,
+          address: department.address,
+        }}
         render={({
           handleSubmit,
           submitting,
@@ -71,7 +84,7 @@ function EditDepartment() {
               variant="outlined"
               type="submit"
               disabled={invalid || submitting}
-            >Add Department</Button>
+            >Update Department</Button>
           </form>
         )}
       />

@@ -70,7 +70,7 @@ router.post("/add", upload.single("logo"), async (req, res) => {
   }
 });
 
-router.post("/edit", async (req, res) => {
+router.post("/edit", upload.single("logo"), async (req, res) => {
   try {
     if (!req.body.id) throw new Error("Department id is required");
     if (!mongoose.isValidObjectId(req.body.id))
@@ -92,16 +92,20 @@ router.post("/edit", async (req, res) => {
       address
     } = req.body;
 
-
-    let updatedDepartment = await Department.findByIdAndUpdate(req.body.id, {
+    const record ={
       name,
       email,
       phone,
-      logo,
       address
-    })
+    }
+    if(req.file && req.file.filename)
+      record.logo = req.file.filename
 
-    res.json({ department: updatedDepartment });
+
+    await Department.findByIdAndUpdate(req.body.id, record)
+     
+
+    res.json({ department: await Department.findById(req.body.id) });
 
   } catch (error) {
     res.status(400).json({ error: error.message });
