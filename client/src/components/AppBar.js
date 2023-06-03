@@ -6,10 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { signout } from '../store/actions/authActions';
 import ProgressBar from './library/ProgressBar';
 import StarPurple500Icon from '@mui/icons-material/StarPurple500';
+import { userTypes } from '../utils/constants';
 
  function AppBar() {
     const dispatch = useDispatch()
     const user = useSelector((state) => state.auth.user)
+    const userType = user.type;
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = (event) => {
         setAnchorEl(event.currentTarget)
@@ -45,13 +47,24 @@ import StarPurple500Icon from '@mui/icons-material/StarPurple500';
             RateMe
         </Typography>
         <Box textAlign="right" flexGrow={1}>
-            <Button
-            component={Link}
-            to="/admin/departments"
-            sx={{color:'#fff', my:2 }}
-            >
-            DEPARTMENTS
-            </Button>
+        {
+              userType === userTypes.USER_TYPE_SUPER &&
+              <Button 
+              LinkComponent={Link}
+              to="/admin/departments"
+              sx={{ color: 'white' }}>
+              Departments
+              </Button>
+            }
+            {
+              userType === userTypes.USER_TYPE_STANDARD &&
+              <Button 
+              LinkComponent={Link}
+              to={`/admin/employees/${user.departmentId}`}
+              sx={{ color: 'white' }}>
+              Employees
+              </Button>
+            }
 
             <Button
             component={Link}
