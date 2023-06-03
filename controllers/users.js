@@ -15,13 +15,11 @@ const path = require('path')
 
 
 
-router.use(['/add','/edit','/delete','/profile','/profile-update'], verifyUser);
+router.use(['/all','/add','/edit','/delete','/profile','/profile-update'], verifyUser);
 
 router.post("/add", async (req, res) => {
     try {
-      //only super admin can add user
-      if (req.user.type !== userTypes.USER_TYPE_SUPER)
-        throw new Error("Invalid Request");
+     
   
       const userExist = await User.findOne({ email: req.body.email });
       if (userExist) throw new Error("This email is already registered");
@@ -32,10 +30,12 @@ router.post("/add", async (req, res) => {
         phoneNumber: req.body.phoneNumber,
         password: await bcrypt.hash(req.body.password, 10),
         type: req.body.type,
-        departmentId: req.body.departmentId,
         createdOn: new Date()
         
       }
+
+      if(req.body.type === userTypes.USER_TYPE_STANDARD)
+      record.departmentId = req.body.departmentId
   
       const user = new User(record)
   
@@ -51,12 +51,6 @@ router.post("/add", async (req, res) => {
   router.post("/edit", async (req, res) => {
     try {
   
-      //only super admin can edit user
-      if (req.user.type !== userTypes.USER_TYPE_SUPER)
-      throw new Error("Invalid Request");
-  
-      const userExist = await User.findOne({ email: req.body.email, _id: { $ne: req.body.id } });
-      if (userExist) throw new Error("This email is already registered");
   
       if (!req.body.id) throw new Error("User id is required");
       if (!mongoose.isValidObjectId(req.body.id))
@@ -68,10 +62,7 @@ router.post("/add", async (req, res) => {
   
       const record = {
         name: req.body.name,
-        email: req.body.email,
         phoneNumber: req.body.phoneNumber,
-        type: req.body.type,
-        departmentId: req.body.departmentId,
         modifiedOn: new Date()
       }
   
@@ -295,9 +286,15 @@ router.post("/profile-update", upload.single('profilePicture'), async (req, res)
     }
 })
 
-router.get("/",async(req,res)=>{
+router.get("/all",async(req,res)=>{
     try{
-        const users = await User.find();
+      let conditions = {};
+      if(req.user.type === userTypes.USER_TYPE_STANDARD)
+        {
+        conditions.departmentId = req.user.departmentId
+        conditions.type = userTypes.USER_TYPE_STANDARD
+        }
+        const users = await User.find(conditions);
         res.status(200).json({users})
     }catch(error){
         res.status(400).json({error:error.message})
