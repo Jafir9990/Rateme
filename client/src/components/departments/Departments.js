@@ -9,7 +9,8 @@ import EditIcon from '@mui/icons-material/Edit'
 import DeleteDepartment from './DeleteDepartment';
 
 function Departments({departments,loadDepartments}) {
-useEffect(()=>{
+console.log(departments)
+  useEffect(()=>{
   if(departments.length === 0)
   loadDepartments()
 },[]);

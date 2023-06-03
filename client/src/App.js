@@ -81,7 +81,7 @@ if(location.pathname === '/' || location.pathname === '/admin')
 const mapStateToProps = (state) => {
   return {
     user: state.auth.user,
-    userType:state.auth.type,
+    userType:state.auth.userType,
     isAuthLoaded: state.auth.isLoaded,
   }
 }
