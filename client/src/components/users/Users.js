@@ -2,10 +2,11 @@ import { Avatar, Box, Button, Chip, IconButton, Table, TableBody, TableCell, Tab
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { loadUsers } from '../../store/actions/userActions';
+import {  loadUsers } from '../../store/actions/userActions';
 import AddIcon from '@mui/icons-material/Add';
 import RefreshIcon from '@mui/icons-material/Refresh'
 import EditIcon from '@mui/icons-material/Edit'
+import DeleteUser from './DeleteUser';
 
 function Users({users,loadUsers}) {
 useEffect(()=>{
@@ -50,7 +51,9 @@ useEffect(()=>{
                         <Chip size='small' label="Standard" color="primary" />
                 }
                 </TableCell>
-                <TableCell> <IconButton component={Link} to={`/admin/users/edit/${user._id}`}> <EditIcon /> </IconButton> </TableCell>
+                <TableCell> <IconButton component={Link} to={`/admin/users/edit/${user._id}`}> <EditIcon /> </IconButton>
+                <DeleteUser userId={user._id} name={user.name} />
+                 </TableCell>
               </TableRow>
             ))
           }

@@ -70,6 +70,7 @@ if(location.pathname === '/' || location.pathname === '/admin')
           <Route path="/admin/users" Component={Users} />
           <Route path="/admin/users/add" Component={AddUser} />
           <Route path="/admin/users/edit/:userId" Component={EditUser} />
+          <Route path="/admin/employees/edit/:deptId" Component={Employees} />
         </Routes>
       </Container>
    
