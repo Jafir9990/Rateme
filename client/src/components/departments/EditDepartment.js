@@ -10,24 +10,36 @@ import FileInput from "../library/form/FileInput";
 import { showError, showSuccess } from "../../store/actions/alertActions";
 import { addDepartment, updateDepartment } from "../../store/actions/departmentActions";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { userTypes } from "../../utils/constants";
 
 
 function EditDepartment() {
 
   const dispatch = useDispatch();
   const {deptId} = useParams()
+  const [department, setDepartment] = useState(null)
   const navigator = useNavigate()
+  const loggedInUserType = useSelector(state => state.auth.user.type)
+
   
-  const department = useSelector(state => state.departments.records.find(item => item._id === deptId))
-  if(!department)
-  {
-    return <Navigate to="/admin/departments" />
-  }
-  
+  useEffect(() => {
+    dispatch(showProgressBar())
+    axios.get('/api/departments/details/' + deptId).then((result) => {
+      dispatch(hideProgressBar())
+      setDepartment(result.data.department)
+    }).catch(error => {
+      let message = error && error.response && error.response.data ? error.response.data.error : error.message;
+        dispatch(hideProgressBar())
+        dispatch(showError(message))
+    })
+  },[])
+   
+  if(!department) return null
   const validate = (data) => {
     const errors = {};
 
-    if (!data.name) errors.name = "Name is required";
+    if (loggedInUserType === userTypes.USER_TYPE_SUPER && !data.name) errors.name = "Name is required";
     if (!data.email) errors.email = "Email is required";
     else if (!/^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/.test(data.email))
       errors.email = "Invalid email address";
@@ -43,7 +55,7 @@ function EditDepartment() {
       if (result.data.department) {
         dispatch(updateDepartment(result.data.department));
         dispatch(showSuccess('Department updated successfully'))
-        navigator('/admin/departments')
+        navigator(`/admin/employees/${deptId}`)
       }
       dispatch(hideProgressBar())
 
@@ -73,7 +85,10 @@ function EditDepartment() {
           invalid,
         }) => (
           <form onSubmit={handleSubmit} method="post" encType="multipart/form-data">
+            {
+              loggedInUserType === userTypes.USER_TYPE_SUPER &&
             <Field component={TextInput} type='text' name="name" placeholder="Enter name" />
+            }
             <Field component={TextInput} type='email' name="email" placeholder="Enter email address" />
             <Field component={TextInput} type='text' name="phone" placeholder="Enter phone number" />
             <Field component={FileInput} type='file' name="logo" inputProps={{ accept: "image/*" }} />

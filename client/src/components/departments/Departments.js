@@ -28,6 +28,7 @@ console.log(departments)
           <TableRow>
             <TableCell>Logo</TableCell>
             <TableCell>Name</TableCell>
+
             <TableCell>Phone</TableCell>
             <TableCell>Email</TableCell>
             <TableCell>Actions</TableCell>
@@ -40,7 +41,7 @@ console.log(departments)
                 <TableCell>
                   {dept.logo && <Avatar alt={dept.name} src={process.env.REACT_APP_BASE_URL + `content/departments/${dept.logo}`} /> 
                   }</TableCell>
-                <TableCell>{dept.name}</TableCell>
+                <TableCell><Link to={`/admin/employees/${dept._id}`}>{dept.name}</Link></TableCell>
                 <TableCell>{dept.phone}</TableCell>
                 <TableCell>{dept.email}</TableCell>
                 <TableCell> <IconButton component={Link} to={`/admin/departments/edit/${dept._id}`}> <EditIcon /> </IconButton> 
