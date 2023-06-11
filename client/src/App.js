@@ -23,6 +23,7 @@ import Users from './components/users/Users';
 import EditUser from './components/users/EditUser';
 import { userTypes } from './utils/constants';
 import Employees from './components/employees/Employees';
+import AddEmployees from './components/employees/AddEmpolyee';
  
 const publicRoutes = ['/admin/signin', '/admin/forgot-password', '/admin/reset-password/']
 
@@ -74,6 +75,7 @@ if(location.pathname === '/' || location.pathname === '/admin')
           <Route path="/admin/employees/edit/:deptId" Component={Employees} />
 
           <Route path="/admin/employees/:deptId" Component={Employees} />
+          <Route path="/admin/employees/add/:deptId" Component={AddEmployees} />
 
         </Routes>
       </Container>
@@ -86,7 +88,7 @@ if(location.pathname === '/' || location.pathname === '/admin')
 const mapStateToProps = (state) => {
   return {
     user: state.auth.user,
-    userType:state.auth.userType,
+    userType: state.auth.user ? state.auth.user.type : null,
     isAuthLoaded: state.auth.isLoaded,
   }
 }
