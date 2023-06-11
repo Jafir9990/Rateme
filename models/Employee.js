@@ -13,11 +13,11 @@ const employeeschema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    phoneNumber: {
+    phone: {
         type: String,
         maxlength: 20,
     },
-    idCard: {
+    cnic: {
         type: String,
         
     },

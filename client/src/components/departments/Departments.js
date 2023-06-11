@@ -18,10 +18,10 @@ console.log(departments)
     <Box>
       <Box display="flex" justifyContent="space-between">
         <Typography variant='h5'>Departments</Typography>
-        <box>
+        <Box>
           <Button component={Link} to="/admin/departments/add" variant='outlined' startIcon={<AddIcon />}>Add</Button>
           <Button sx={{ml: 1}} onClick={loadDepartments} variant='outlined' endIcon={<RefreshIcon />}>Refresh</Button>
-        </box>
+        </Box>
       </Box>
       <Table>
         <TableHead>
