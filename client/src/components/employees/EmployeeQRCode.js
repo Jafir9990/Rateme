@@ -2,6 +2,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton }
 import QrCode2Icon from "@mui/icons-material/QrCode2";
 import { useState } from "react";
 import qrious from "qrious";
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 
 function EmployeeQRCode({employeeId,name}) {
@@ -35,7 +36,7 @@ function EmployeeQRCode({employeeId,name}) {
             <canvas id="qr-code"></canvas>
             </DialogContent>
             <DialogActions sx={{justifyContent:"center"}}>
-            <Button component="a" id="download-qr-code" download={`${name} - qrcode.png`} color="primary" variant="contained">Download</Button>
+            <Button component="a" id="download-qr-code" download={`${name} - qrcode.png`} color="primary" variant="contained">Download<FileDownloadIcon /></Button>
             <Button onClick={handleClose} autoFocus>Close</Button>
             </DialogActions>
         </Dialog>
