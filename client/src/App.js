@@ -25,6 +25,7 @@ import { userTypes } from './utils/constants';
 import Employees from './components/employees/Employees';
 import AddEmployees from './components/employees/AddEmpolyee';
 import EditEmployee from './components/employees/EditEmployee';
+import EmployeeProfile from './components/employees/EmployeeProfile';
  
 const publicRoutes = ['/admin/signin', '/admin/forgot-password', '/admin/reset-password/']
 
@@ -33,18 +34,21 @@ function App({ user, isAuthLoaded, loadAuth, userType }) {
   useEffect(() => {
     loadAuth()
   }, [])
-  if (!isAuthLoaded) {
-    return <AppPreLoader message="loading App....." />
+  if (!isAuthLoaded) return <AppPreLoader message="loading App....." />
+  
+  if(user)
+  {
+    if(publicRoutes.find(url  => location.pathname.startsWith(url)) )
+       return <Navigate to="/admin/dashboard"/>
+    if(location.pathname === '/' || location.pathname.startsWith('/employee/feedback') )
+      return <Navigate to="/admin/dashboard"/>
+
+  }else
+  {
+    if(!publicRoutes.find(url  => location.pathname.startsWith(url)) && location.pathname !== '/' && !location.pathname.startsWith('/employee/feedback'))
+      return <Navigate to="/" />
+
   }
-
-if(user && publicRoutes.find(url  => location.pathname.startsWith(url)) )
-  return <Navigate to="/admin/dashboard"/>
-if(!user && !publicRoutes.find(url  => location.pathname.startsWith(url)) )
-  return <Navigate to="/admin/signin"/>
-if(location.pathname === '/' || location.pathname === '/admin')
-  return <Navigate to="/admin/signin"/>
-
-
 
   if (!user)
     return <AppPublic />
@@ -57,6 +61,8 @@ if(location.pathname === '/' || location.pathname === '/admin')
         <Routes>
           <Route path='/admin/account-settings' Component={AccountSettings}/>
           <Route path='/admin/dashboard' Component={Dashboard}/>
+          <Route path="/admin/employees/profile/:employeeId" Component={EmployeeProfile} />
+
 
           {/* Departments routes */}
 
@@ -77,6 +83,7 @@ if(location.pathname === '/' || location.pathname === '/admin')
           <Route path="/admin/employees/:deptId" Component={Employees} />
           <Route path="/admin/employees/add/:deptId" Component={AddEmployees} />
           <Route path="/admin/employees/edit/:employeeId" Component={EditEmployee} />
+          <Route path="/admin/employees/profile/:employeeId" Component={EmployeeProfile} />
 
         </Routes>
       </Container>
