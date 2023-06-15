@@ -11,14 +11,16 @@ const employeeschema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true,
+
     },
     phone: {
         type: String,
         maxlength: 20,
+
     },
     cnic: {
         type: String,
+
         
     },
     departmentId: {
@@ -29,7 +31,8 @@ const employeeschema = new mongoose.Schema({
         type:String,
     },
     designation:{
-        type:String
+        type:String,
+
     },
     
     rating: {
@@ -52,7 +55,7 @@ const employeeschema = new mongoose.Schema({
 
 
 
-
+employeeschema.index({ name: "text", email: "text", phone: "text", cnic: "text" ,designation: "text"}); // create an index on multiple fields
 const Employee = mongoose.model("employees", employeeschema);
 
 module.exports = Employee;

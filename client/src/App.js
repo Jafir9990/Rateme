@@ -24,6 +24,7 @@ import EditUser from './components/users/EditUser';
 import { userTypes } from './utils/constants';
 import Employees from './components/employees/Employees';
 import AddEmployees from './components/employees/AddEmpolyee';
+import EditEmployee from './components/employees/EditEmployee';
  
 const publicRoutes = ['/admin/signin', '/admin/forgot-password', '/admin/reset-password/']
 
@@ -72,10 +73,10 @@ if(location.pathname === '/' || location.pathname === '/admin')
           <Route path="/admin/users" Component={Users} />
           <Route path="/admin/users/add" Component={AddUser} />
           <Route path="/admin/users/edit/:userId" Component={EditUser} />
-          <Route path="/admin/employees/edit/:deptId" Component={Employees} />
 
           <Route path="/admin/employees/:deptId" Component={Employees} />
           <Route path="/admin/employees/add/:deptId" Component={AddEmployees} />
+          <Route path="/admin/employees/edit/:employeeId" Component={EditEmployee} />
 
         </Routes>
       </Container>
