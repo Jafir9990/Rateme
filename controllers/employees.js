@@ -166,6 +166,27 @@ router.get("/details/:employeeId", async (req, res) => {
     }
 })
 
+
+router.get("/publicDetails/:employeeId", async (req, res) => {
+   
+    try {
+
+        if(!req.params.employeeId) throw new Error("Employee id is required")
+        if(!mongoose.isValidObjectId(req.params.employeeId))
+        throw new Error("Employee id is invalid")
+
+
+        const employee = await Employee.findById(req.params.employeeId,{_id: 1, name:1,profilePicture:1,departmentId: 1});
+        if(!employee) throw new Error("invalid Employee id")
+
+        res.json({employee} )
+
+
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+    }
+})
+
 router.post("/delete", async(req,res)=>{
     
         try {
@@ -220,7 +241,7 @@ router.post("/search",async(req,res)=>{
     }
 })
 
-    router.get('/dashboard',async(req, res) =>{
+router.get('/dashboard',async(req, res) =>{
         
         try{
             const stats = {
@@ -248,7 +269,7 @@ router.post("/search",async(req,res)=>{
         }
     })
 
-    router.post("/publicSearch",async(req,res)=>{
+router.post("/publicSearch",async(req,res)=>{
         try{
             if(!req.body.departmentId)
                 throw new Error("DepartmentId is Required")
@@ -260,7 +281,7 @@ router.post("/search",async(req,res)=>{
     
             const filter = {departmentId: req.body.departmentId, name:{$regex: req.body.name, $options: 'i'}};
      
-            const employees = await Employee.find(filter,{_id: 1,profilePicture: 1,name: 1});
+            const employees = await Employee.find(filter,{_id: 1,profilePicture: 1,name: 1,departmentId: 1});
             
     
            res.status(200).json({employees})
@@ -273,31 +294,63 @@ router.post("/search",async(req,res)=>{
 
 router.post("/feedback", async(req,res)=>{
 try {
+    if(!req.body.employeeId)
+        throw new error('Employee Id is Required')
+    
+        if(!req.body.rating)
+        throw new error('Rating is Required')
+    
+        if(!req.body.name)
+        throw new error('Name is Required')
 
+        const employee = await Employee.findById(req.body.employeeId);
+        if(!employee) 
+            throw new Error("invalid id")
     const{
         name,
-        phoneNumber,
-        feedbackData,
+        phone,
+        message,
         employeeId,
         rating,
     } = req.body
 
-    const employee = await Employee.findById(employeeId);
-        if(!employee) throw new Error("invalid id")
+   
 
     if(rating < 0 || rating > 5)
-    throw new Error("invalid Request")
+        throw new Error("invalid Request")
 
-    const ratingData = Rating({
+    const ratingData = new Rating({
         name,
-        phoneNumber,
-        feedbackData,
+        phone,
+        message,
         departmentId: employee.departmentId,
         employeeId,
         rating,
+        createdOn: new Date()
     });
     await ratingData.save()
-    res.json({ratingData})
+    let result = await Rating.aggregate([
+        {$match: {departmentId: { $eq: employee.departmentId}}},
+        {$group: {_id: null, avg_value: {$avg: '$rating'}}}
+    ]);
+    if(result && result.length)
+    {
+        await Employee.findByIdAndUpdate(employeeId, {rating: result[0].avg_value.toFixed(1) });
+    }
+
+     result = await Rating.aggregate([
+        {$match: {departmentId: { $eq: employee.departmentId}}},
+        {$group: {_id: null, avg_value: {$avg: '$rating'}}}
+    ]);
+    if(result && result.length)
+    {
+        await Department.findByIdAndUpdate(employee.departmentId, {rating: result[0].avg_value.toFixed(1) });
+    }
+
+    
+
+
+    res.json({success: true})
     
 } catch (error) {
     res.status(400).json({error:error.message})
