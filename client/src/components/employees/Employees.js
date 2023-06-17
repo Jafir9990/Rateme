@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, IconButton, Pagination, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import { Avatar, Box, Button, IconButton, Pagination, Rating, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import { connect, useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { loadDepartments } from "../../store/actions/departmentActions";
@@ -59,6 +59,8 @@ import EmployeeQRCode from "./EmployeeQRCode";
             <Box >
                 <Box display="flex" justifyContent="space-between">
                     <Typography variant="h5">{department.name} - Employees</Typography>
+                    
+                    <Typography textAlign="center" color="#706f6f"> <Rating value={department.rating} readOnly/> ({department.rating})</Typography>
                     <Box>
                         <Button sx={{ mr: 1 }} component={Link} to={`/admin/departments/edit/${deptId}`} variant="outlined" startIcon={<EditIcon/>}>Edit Department Info</Button>
                         <Button component={Link} to={`/admin/employees/add/${deptId}`} variant="outlined" startIcon={<AddIcon />}>Add Employess</Button>

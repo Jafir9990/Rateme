@@ -14,10 +14,6 @@ function ScanQRCode({employeeId,name}) {
         setOpen(false)
     }
 
-    function onScanSuccess(decodedText, decodedResult) {
-        // handle the scanned code as you like, for example:
-        console.log(`Code matched = ${decodedText}`, decodedResult);
-      }
       
       function onScanFailure(error) {
         // handle scan failure, usually better to ignore and keep scanning.
@@ -29,10 +25,22 @@ function ScanQRCode({employeeId,name}) {
         setOpen(true)
         setTimeout(() => {
 
-            let html5QrcodeScanner = new Html5QrcodeScanner(
+            const html5QrcodeScanner = new Html5QrcodeScanner(
                 "reader",
-                { fps: 10, qrbox: { width: 250, height: 250 } }, false);
+                { fps: 10, qrbox: { width: 250, height: 250 } }, 
+                false);
+
+                            
+             async function onScanSuccess(decodedText, decodedResult) {
+                    if(decodedText.includes('employee/feedback'))
+                    {
+                        let url = decodedText.replace(process.env.REACT_APP_BASE_URL, '/')
+                        await html5QrcodeScanner.clear();
+                        navigator(url)
+                    }
+                }
             html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+
         }, 300);
     }
     
