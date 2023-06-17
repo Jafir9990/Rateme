@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { hideProgressBar, showProgressBar } from "../../store/actions/progressBarAction";
 import axios from "axios";
 import { showError } from "../../store/actions/alertActions";
+import EmployeeFeedback from "./EmployeeFeedback";
 
 
 
@@ -44,6 +45,7 @@ function EmployeeProfile() {
                 </Grid>
 
             </Grid>
+            <EmployeeFeedback employeeId={employeeId} />
         </Box>
   )
 }
